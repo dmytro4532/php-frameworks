@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ReturnEntry index{% endblock %}
+
+{% block body %}
+    <h1>ReturnEntry index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>ReturnedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for return_entry in return_entries %}
+            <tr>
+                <td>{{ return_entry.id }}</td>
+                <td>{{ return_entry.returnedAt ? return_entry.returnedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_return_entry_show', {'id': return_entry.id}) }}">show</a>
+                    <a href="{{ path('app_return_entry_edit', {'id': return_entry.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_return_entry_new') }}">Create new</a>
+{% endblock %}

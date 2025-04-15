@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ReturnEntry{% endblock %}
+
+{% block body %}
+    <h1>Create new ReturnEntry</h1>
+
+    {{ include('return_entry/_form.html.twig') }}
+
+    <a href="{{ path('app_return_entry_index') }}">back to list</a>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ReturnEntry{% endblock %}
+
+{% block body %}
+    <h1>ReturnEntry</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ return_entry.id }}</td>
+            </tr>
+            <tr>
+                <th>ReturnedAt</th>
+                <td>{{ return_entry.returnedAt ? return_entry.returnedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_return_entry_index') }}">back to list</a>
+
+    <a href="{{ path('app_return_entry_edit', {'id': return_entry.id}) }}">edit</a>
+
+    {{ include('return_entry/_delete_form.html.twig') }}
+{% endblock %}
