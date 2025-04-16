@@ -5,14 +5,26 @@
 {% block body %}
     <h1>Reader index</h1>
 
+    <form method="get" class="mb-3">
+        <input type="text" name="id" value="{{ filters.id }}" placeholder="Filter by ID">
+        <input type="text" name="fullName" value="{{ filters.fullName }}" placeholder="Filter by Full Name">
+        <input type="text" name="email" value="{{ filters.email }}" placeholder="Filter by Email">
+        <select name="itemsPerPage">
+            {% for n in [5, 10, 20, 50] %}
+                <option value="{{ n }}" {% if itemsPerPage == n %}selected{% endif %}>{{ n }} per page</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
     <table class="table">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>FullName</th>
-                <th>Email</th>
-                <th>actions</th>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
         {% for reader in readers %}
@@ -32,6 +44,15 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <div>
+        {% for i in 1..totalPages %}
+            <a href="{{ path('app_reader_index', app.request.query.all|merge({'page': i})) }}"
+               {% if i == currentPage %}style="font-weight: bold;"{% endif %}>
+                {{ i }}
+            </a>
+        {% endfor %}
+    </div>
 
     <a href="{{ path('app_reader_new') }}">Create new</a>
 {% endblock %}

@@ -40,4 +40,35 @@ class BookRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findByFilters(array $filters, int $page, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        if (!empty($filters['id'])) {
+            $qb->andWhere('b.id = :id')
+                ->setParameter('id', $filters['id']);
+        }
+
+        if (!empty($filters['title'])) {
+            $qb->andWhere('b.title LIKE :title')
+                ->setParameter('title', '%' . $filters['title'] . '%');
+        }
+
+        $countQb = clone $qb;
+        $countQb->select('COUNT(b.id)');
+        $totalItems = (int) $countQb->getQuery()->getSingleScalarResult();
+
+        $qb->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+        $items = $qb->getQuery()->getResult();
+
+        $totalPages = max(1, ceil($totalItems / $limit));
+
+        return [
+            'items' => $items,
+            'totalPages' => $totalPages,
+        ];
+    }
+
 }

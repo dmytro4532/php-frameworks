@@ -15,10 +15,24 @@ use Symfony\Component\Routing\Attribute\Route;
 final class IssueController extends AbstractController
 {
     #[Route(name: 'app_issue_index', methods: ['GET'])]
-    public function index(IssueRepository $issueRepository): Response
+    public function index(Request $request, IssueRepository $issueRepository): Response
     {
+        $filters = [
+            'id' => $request->query->get('id'),
+            'issuedAt' => $request->query->get('issuedAt'),
+        ];
+
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(1, (int) $request->query->get('itemsPerPage', 10));
+
+        $paginator = $issueRepository->findByFilters($filters, $page, $limit);
+
         return $this->render('issue/index.html.twig', [
-            'issues' => $issueRepository->findAll(),
+            'issues' => $paginator['items'],
+            'totalPages' => $paginator['totalPages'],
+            'currentPage' => $page,
+            'itemsPerPage' => $limit,
+            'filters' => $filters,
         ]);
     }
 

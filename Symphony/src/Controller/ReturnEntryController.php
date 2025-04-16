@@ -15,10 +15,24 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ReturnEntryController extends AbstractController
 {
     #[Route(name: 'app_return_entry_index', methods: ['GET'])]
-    public function index(ReturnEntryRepository $returnEntryRepository): Response
+    public function index(Request $request, ReturnEntryRepository $returnEntryRepository): Response
     {
+        $filters = [
+            'id' => $request->query->get('id'),
+            'returnedAt' => $request->query->get('returnedAt'),
+        ];
+
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(1, (int) $request->query->get('itemsPerPage', 10));
+
+        $paginator = $returnEntryRepository->findByFilters($filters, $page, $limit);
+
         return $this->render('return_entry/index.html.twig', [
-            'return_entries' => $returnEntryRepository->findAll(),
+            'return_entries' => $paginator['items'],
+            'totalPages' => $paginator['totalPages'],
+            'currentPage' => $page,
+            'itemsPerPage' => $limit,
+            'filters' => $filters,
         ]);
     }
 

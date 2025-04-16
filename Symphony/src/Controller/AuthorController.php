@@ -15,12 +15,27 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AuthorController extends AbstractController
 {
     #[Route(name: 'app_author_index', methods: ['GET'])]
-    public function index(AuthorRepository $authorRepository): Response
+    public function index(Request $request, AuthorRepository $authorRepository): Response
     {
+        $filters = [
+            'id' => $request->query->get('id'),
+            'fullName' => $request->query->get('fullName'),
+        ];
+
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(1, (int) $request->query->get('itemsPerPage', 10));
+
+        $paginator = $authorRepository->findByFilters($filters, $page, $limit);
+
         return $this->render('author/index.html.twig', [
-            'authors' => $authorRepository->findAll(),
+            'authors' => $paginator['items'],
+            'totalPages' => $paginator['totalPages'],
+            'currentPage' => $page,
+            'itemsPerPage' => $limit,
+            'filters' => $filters,
         ]);
     }
+
 
     #[Route('/new', name: 'app_author_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response

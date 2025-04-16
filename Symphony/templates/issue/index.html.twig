@@ -5,19 +5,30 @@
 {% block body %}
     <h1>Issue index</h1>
 
+    <form method="get" class="mb-3">
+        <input type="text" name="id" value="{{ filters.id }}" placeholder="Filter by ID">
+        <input type="date" name="issuedAt" value="{{ filters.issuedAt }}" placeholder="Issued At">
+        <select name="itemsPerPage">
+            {% for n in [5, 10, 20, 50] %}
+                <option value="{{ n }}" {% if itemsPerPage == n %}selected{% endif %}>{{ n }} per page</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
     <table class="table">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>IssuedAt</th>
-                <th>actions</th>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <th>IssuedAt</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
         {% for issue in issues %}
             <tr>
                 <td>{{ issue.id }}</td>
-                <td>{{ issue.IssuedAt ? issue.IssuedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ issue.issuedAt ? issue.issuedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('app_issue_show', {'id': issue.id}) }}">show</a>
                     <a href="{{ path('app_issue_edit', {'id': issue.id}) }}">edit</a>
@@ -30,6 +41,15 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <div>
+        {% for i in 1..totalPages %}
+            <a href="{{ path('app_issue_index', app.request.query.all|merge({'page': i})) }}"
+               {% if i == currentPage %}style="font-weight: bold;"{% endif %}>
+                {{ i }}
+            </a>
+        {% endfor %}
+    </div>
 
     <a href="{{ path('app_issue_new') }}">Create new</a>
 {% endblock %}

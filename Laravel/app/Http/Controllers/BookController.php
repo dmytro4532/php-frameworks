@@ -8,9 +8,23 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::all();
+        $query = Book::query()->with('author');
+
+        if ($request->filled('title')) {
+            $query->where('title', 'like', '%' . $request->title . '%');
+        }
+
+        if ($request->filled('author')) {
+            $query->whereHas('author', function ($q) use ($request) {
+                $q->where('fullName', 'like', '%' . $request->author . '%');
+            });
+        }
+
+        $itemsPerPage = $request->input('itemsPerPage', 10); // default 10
+        $books = $query->paginate($itemsPerPage)->appends($request->all());
+
         return view('books.index', compact('books'));
     }
 

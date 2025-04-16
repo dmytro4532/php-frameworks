@@ -28,6 +28,29 @@
                     @endforelse
                     </tbody>
                 </table>
+                <form method="GET" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" name="fullName" class="form-control" placeholder="Filter by Name" value="{{ request('fullName') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="itemsPerPage" class="form-control">
+                                @foreach([5, 10, 25, 50] as $count)
+                                    <option value="{{ $count }}" {{ request('itemsPerPage', 10) == $count ? 'selected' : '' }}>
+                                        {{ $count }} per page
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary w-100">Apply</button>
+                            <a href="{{ route('authors.index') }}" class="btn btn-secondary w-100">Reset</a>
+                        </div>
+                    </div>
+                </form>
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $authors->links() }}
+                </div>
             </div>
         </div>
     </div>

@@ -15,10 +15,24 @@ use Symfony\Component\Routing\Attribute\Route;
 final class BookController extends AbstractController
 {
     #[Route(name: 'app_book_index', methods: ['GET'])]
-    public function index(BookRepository $bookRepository): Response
+    public function index(Request $request, BookRepository $bookRepository): Response
     {
+        $filters = [
+            'id' => $request->query->get('id'),
+            'title' => $request->query->get('title'),
+        ];
+
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(1, (int) $request->query->get('itemsPerPage', 10));
+
+        $paginator = $bookRepository->findByFilters($filters, $page, $limit);
+
         return $this->render('book/index.html.twig', [
-            'books' => $bookRepository->findAll(),
+            'books' => $paginator['items'],
+            'totalPages' => $paginator['totalPages'],
+            'currentPage' => $page,
+            'itemsPerPage' => $limit,
+            'filters' => $filters,
         ]);
     }
 

@@ -7,9 +7,17 @@ use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $authors = Author::all();
+        $query = Author::query();
+
+        if ($request->filled('fullName')) {
+            $query->where('fullName', 'like', '%' . $request->fullName . '%');
+        }
+
+        $itemsPerPage = $request->input('itemsPerPage', 10);
+        $authors = $query->paginate($itemsPerPage)->appends($request->all());
+
         return view('authors.index', compact('authors'));
     }
 

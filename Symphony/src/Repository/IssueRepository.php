@@ -40,4 +40,39 @@ class IssueRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findByFilters(array $filters, int $page, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('i');
+
+        if (!empty($filters['id'])) {
+            $qb->andWhere('i.id = :id')
+                ->setParameter('id', $filters['id']);
+        }
+
+        if (!empty($filters['issuedAt'])) {
+            $date = new \DateTime($filters['issuedAt']);
+            $startOfDay = $date->format('Y-m-d');
+            $endOfDay = $date->add(new \DateInterval('P1D'))->format('Y-m-d');
+
+            $qb->andWhere('i.IssuedAt BETWEEN :startOfDay AND :endOfDay')
+                ->setParameter('startOfDay', $startOfDay)
+                ->setParameter('endOfDay', $endOfDay);
+        }
+
+        $countQb = clone $qb;
+        $countQb->select('COUNT(i.id)');
+        $totalItems = (int)$countQb->getQuery()->getSingleScalarResult();
+
+        $qb->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        $items = $qb->getQuery()->getResult();
+        $totalPages = max(1, ceil($totalItems / $limit));
+
+        return [
+            'items' => $items,
+            'totalPages' => $totalPages,
+        ];
+    }
 }

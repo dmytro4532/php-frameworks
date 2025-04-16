@@ -33,6 +33,30 @@
                     @endforelse
                     </tbody>
                 </table>
+                <form method="GET" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="text" name="title" class="form-control" placeholder="Filter by Title" value="{{ request('title') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="author" class="form-control" placeholder="Filter by Author" value="{{ request('author') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <select name="itemsPerPage" class="form-control">
+                                @foreach([5, 10, 25, 50] as $count)
+                                    <option value="{{ $count }}" {{ request('itemsPerPage', 10) == $count ? 'selected' : '' }}>{{ $count }} per page</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Apply</button>
+                            <a href="{{ route('books.index') }}" class="btn btn-secondary w-100">Reset</a>
+                        </div>
+                    </div>
+                </form>
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $books->links() }}
+                </div>
             </div>
         </div>
     </div>

@@ -40,4 +40,35 @@ class AuthorRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findByFilters(array $filters, int $page, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        if (!empty($filters['id'])) {
+            $qb->andWhere('a.id = :id')
+                ->setParameter('id', $filters['id']);
+        }
+
+        if (!empty($filters['fullName'])) {
+            $qb->andWhere('a.fullName LIKE :fullName')
+                ->setParameter('fullName', '%' . $filters['fullName'] . '%');
+        }
+
+        $countQb = clone $qb;
+        $countQb->select('COUNT(a.id)');
+        $totalItems = (int) $countQb->getQuery()->getSingleScalarResult();
+
+        $qb->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        $items = $qb->getQuery()->getResult();
+
+        $totalPages = max(1, ceil($totalItems / $limit));
+
+        return [
+            'items' => $items,
+            'totalPages' => $totalPages,
+        ];
+    }
 }

@@ -10,9 +10,37 @@ use Illuminate\Http\Request;
 
 class LoanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $loans = Loan::with(['book', 'reader', 'return'])->get();
+        $query = Loan::with(['book', 'reader', 'return']);
+
+        if ($request->filled('book')) {
+            $query->whereHas('book', function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->book . '%');
+            });
+        }
+
+        if ($request->filled('reader')) {
+            $query->whereHas('reader', function ($q) use ($request) {
+                $q->where('fullName', 'like', '%' . $request->reader . '%');
+            });
+        }
+
+        if ($request->filled('loan_date')) {
+            $query->whereDate('loan_date', $request->loan_date);
+        }
+
+        if ($request->filled('returned')) {
+            if ($request->returned === 'yes') {
+                $query->whereNotNull('return_id');
+            } elseif ($request->returned === 'no') {
+                $query->whereNull('return_id');
+            }
+        }
+
+        $itemsPerPage = $request->input('itemsPerPage', 10);
+        $loans = $query->paginate($itemsPerPage)->appends($request->all());
+
         return view('loans.index', compact('loans'));
     }
 

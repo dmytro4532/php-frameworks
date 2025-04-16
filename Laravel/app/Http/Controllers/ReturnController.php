@@ -8,11 +8,24 @@ use Illuminate\Http\Request;
 
 class ReturnController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $returns = ReturnModel::with('loan')->get();
+        $query = ReturnModel::with('loan');
+
+        if ($request->filled('loan_id')) {
+            $query->where('loan_id', $request->loan_id);
+        }
+
+        if ($request->filled('return_date')) {
+            $query->whereDate('return_date', $request->return_date);
+        }
+
+        $itemsPerPage = $request->input('itemsPerPage', 10);
+        $returns = $query->paginate($itemsPerPage)->appends($request->all());
+
         return view('returns.index', compact('returns'));
     }
+
 
     public function create()
     {
