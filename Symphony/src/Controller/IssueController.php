@@ -10,10 +10,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/issue')]
 final class IssueController extends AbstractController
 {
+    #[IsGranted("ROLE_USER")]
     #[Route(name: 'app_issue_index', methods: ['GET'])]
     public function index(Request $request, IssueRepository $issueRepository): Response
     {
@@ -36,6 +38,7 @@ final class IssueController extends AbstractController
         ]);
     }
 
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/new', name: 'app_issue_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -56,6 +59,7 @@ final class IssueController extends AbstractController
         ]);
     }
 
+    #[IsGranted("ROLE_USER")]
     #[Route('/{id}', name: 'app_issue_show', methods: ['GET'])]
     public function show(Issue $issue): Response
     {
@@ -64,6 +68,7 @@ final class IssueController extends AbstractController
         ]);
     }
 
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/{id}/edit', name: 'app_issue_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Issue $issue, EntityManagerInterface $entityManager): Response
     {
@@ -82,6 +87,7 @@ final class IssueController extends AbstractController
         ]);
     }
 
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/{id}', name: 'app_issue_delete', methods: ['POST'])]
     public function delete(Request $request, Issue $issue, EntityManagerInterface $entityManager): Response
     {

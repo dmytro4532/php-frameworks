@@ -10,10 +10,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/reader')]
 final class ReaderController extends AbstractController
 {
+    #[IsGranted("ROLE_USER")]
     #[Route(name: 'app_reader_index', methods: ['GET'])]
     public function index(Request $request, ReaderRepository $readerRepository): Response
     {
@@ -37,7 +39,7 @@ final class ReaderController extends AbstractController
         ]);
     }
 
-
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/new', name: 'app_reader_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -58,6 +60,7 @@ final class ReaderController extends AbstractController
         ]);
     }
 
+    #[IsGranted("ROLE_USER")]
     #[Route('/{id}', name: 'app_reader_show', methods: ['GET'])]
     public function show(Reader $reader): Response
     {
@@ -66,6 +69,7 @@ final class ReaderController extends AbstractController
         ]);
     }
 
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/{id}/edit', name: 'app_reader_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Reader $reader, EntityManagerInterface $entityManager): Response
     {
@@ -84,6 +88,7 @@ final class ReaderController extends AbstractController
         ]);
     }
 
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/{id}', name: 'app_reader_delete', methods: ['POST'])]
     public function delete(Request $request, Reader $reader, EntityManagerInterface $entityManager): Response
     {

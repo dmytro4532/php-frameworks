@@ -1,0 +1,35 @@
+services:
+  ###> doctrine/doctrine-bundle ###
+  library-symfony-db:
+    platform: linux/amd64
+    image: mysql:5.7
+    volumes:
+      - library-db-symfony-data:/var/lib/mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: library-symfony-db
+      MYSQL_PASSWORD: password
+    networks:
+      - library-symfony-net
+
+  library-symfony-phpmyadmin:
+    depends_on:
+      - library-symfony-db
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: library-symfony-db
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - library-symfony-net
+
+networks:
+  library-symfony-net:
+
+volumes:
+  library-db-symfony-data:
