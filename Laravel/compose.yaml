@@ -1,0 +1,35 @@
+services:
+  ###> doctrine/doctrine-bundle ###
+  library-laravel-db:
+    platform: linux/amd64
+    image: mysql:5.7
+    volumes:
+      - library-db-laravel-data:/var/lib/mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: library-laravel-db
+      MYSQL_PASSWORD: password
+    networks:
+      - library-laravel-net
+
+  library-laravel-phpmyadmin:
+    depends_on:
+      - library-laravel-db
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: library-laravel-db
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - library-laravel-net
+
+networks:
+  library-laravel-net:
+
+volumes:
+  library-db-laravel-data:

@@ -12,25 +12,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test', [\App\Http\Controllers\TestController::class, 'index']);
-
-Route::prefix('products')->group(function () {
-
-    Route::get('/', [ProductController::class, 'getProducts']);
-
-    Route::get('/{id}', [ProductController::class, 'getProductItem']);
-
-    Route::post('/', [ProductController::class, 'createProduct']);
-
-    Route::put('/{id}', [ProductController::class, 'updateProduct']);
-
-    Route::delete('/{id}', [ProductController::class, 'deleteProduct']);
-});
-
-Route::resources([
-    'authors' => AuthorController::class,
-    'books' => BookController::class,
-    'readers' => ReaderController::class,
-    'loans' => LoanController::class,
-    'returns' => ReturnController::class,
-]);
+//Route::resources([
+//    'authors' => AuthorController::class,
+//    'books' => BookController::class,
+//    'readers' => ReaderController::class,
+//    'loans' => LoanController::class,
+//    'returns' => ReturnController::class,
+//]);
